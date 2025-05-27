@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "description": "A lightweight React signal system for sharing reactive state across components — no prop drilling, no context, no global state libraries. Just pure reactivity.",
   "license": "MIT",
-  "author": "Ayush Chauhan",
+  "author": "Ayush Chauhan <ai.aayush10@gmail.com>",
   "type": "commonjs",
   "keywords": [
     "react",
@@ -12,11 +12,19 @@
     "state",
     "react-unprop"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aayushchauhan10/react-unprop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aayushchauhan10/react-unprop/issues"
+  },
+  "homepage": "https://github.com/aayushchauhan10/react-unprop#readme",
   "peerDependencies": {
     "react": ">=18.0.0"
   },
  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+ "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": ["dist"],
   "scripts": {

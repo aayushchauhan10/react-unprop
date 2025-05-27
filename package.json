@@ -1,0 +1,35 @@
+{
+  "name": "react-unprop",
+  "version": "1.0.1",
+  "description": "A lightweight React signal system for sharing reactive state across components — no prop drilling, no context, no global state libraries. Just pure reactivity.",
+  "license": "MIT",
+  "author": "Ayush Chauhan",
+  "type": "commonjs",
+  "keywords": [
+    "react",
+    "hook",
+    "unprop",
+    "state",
+    "react-unprop"
+  ],
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+ "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist",
+    "prepare": "npm run build",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.5",
+    "eslint": "^9.27.0",
+    "prettier": "^3.5.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
+  }
+}

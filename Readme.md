@@ -347,20 +347,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Made with ❤️ for the React community**
 
 [Report Bug](https://github.com/aayushchauhan10/react-unprop/issues) · [Request Feature](https://github.com/aayushchauhan10/react-unprop/issues) · [Documentation](https://github.com/aayushchauhan10/react-unprop#readme)
-\`\`\`
 
-This README.md file includes:
-
-- **Clear title and description** with badges
-- **Feature highlights** with emojis for visual appeal
-- **Installation instructions** for multiple package managers
-- **Quick start example** to get users going immediately
-- **Complete API reference** with parameters and return values
-- **Multiple practical examples** showing different use cases
-- **TypeScript support** with typed examples
-- **Comparison with traditional approaches** explaining the benefits
-- **Migration guide** for users coming from useState/Context
-- **Contributing guidelines** for open source collaboration
-- **License and acknowledgments**
-
-The README follows best practices for open source projects and provides comprehensive documentation that would help users understand and adopt the library quickly.

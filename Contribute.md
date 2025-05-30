@@ -5,7 +5,7 @@ Thank you for your interest in contributing! 🎉
 ## Getting Started
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/yourusername/react-unprop.git`
+2. Clone your fork: `git clone https://github.com/aayushchauhan10/react-unprop.git`
 3. Create a branch: `git checkout -b feature/amazing-feature`
 4. Install dependencies: `npm install`
 

@@ -23,40 +23,40 @@ Fast, flexible, and works across your entire React tree.
 
 Install using npm:
 
-\`\`\`bash
+```bash
 npm install react-unprop
-\`\`\`
+```
 
 or using yarn:
 
-\`\`\`bash
+```bash
 yarn add react-unprop
-\`\`\`
+```
 
 or using pnpm:
 
-\`\`\`bash
+```bash
 pnpm add react-unprop
-\`\`\`
+```
 
 ## 🚀 Quick Start
 
 Create and use react-unprops just like global `useState` — but better.
 
-\`\`\`jsx
+```jsx
 import { createSignal, useSignal } from "react-unprop";
 
 const counter = createSignal(0);
 
 function Counter() {
-const count = useSignal(counter);
-return <h1>{count}</h1>;
+  const count = useSignal(counter);
+  return <h1>{count}</h1>;
 }
 
 function IncrementButton() {
-return <button onClick={() => counter.set(c => c + 1)}>Increment</button>;
+  return <button onClick={() => counter.set((c) => c + 1)}>Increment</button>;
 }
-\`\`\`
+```
 
 ✅ Both components update automatically when the signal changes.
 
@@ -78,18 +78,18 @@ Creates a reactive signal.
 
 **Example:**
 
-\`\`\`js
+```js
 const user = createSignal({ name: "Alice" });
 
 // Set with value
 user.set({ name: "Bob", age: 25 });
 
 // Set with updater function
-user.set(prev => ({ ...prev, name: "Bob" }));
+user.set((prev) => ({ ...prev, name: "Bob" }));
 
 // Get current value
 console.log(user.get()); // { name: "Bob", age: 25 }
-\`\`\`
+```
 
 ### `useSignal(signal)`
 
@@ -103,174 +103,163 @@ React hook that subscribes to a signal and auto-rerenders on update.
 
 **Example:**
 
-\`\`\`jsx
+```jsx
 function Profile() {
-const user = useSignal(userSignal);
-return <div>Hello, {user.name}!</div>;
+  const user = useSignal(userSignal);
+  return <div>Hello, {user.name}!</div>;
 }
-\`\`\`
+```
 
 ## 🧪 Examples
 
 ### 🔢 Counter
 
-\`\`\`jsx
+```jsx
 import { createSignal, useSignal } from "react-unprop";
 
 const counter = createSignal(0);
 
 function App() {
-const count = useSignal(counter);
+  const count = useSignal(counter);
 
-return (
-
-<div>
-<h1>{count}</h1>
-<button onClick={() => counter.set(c => c + 1)}>+</button>
-<button onClick={() => counter.set(c => c - 1)}>-</button>
-</div>
-);
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => counter.set((c) => c + 1)}>+</button>
+      <button onClick={() => counter.set((c) => c - 1)}>-</button>
+    </div>
+  );
 }
-\`\`\`
+```
 
 ### 👥 Shared Object State
 
-\`\`\`jsx
+```jsx
 const userSignal = createSignal({ name: "John", age: 25 });
 
 function UserProfile() {
-const user = useSignal(userSignal);
-return <p>{user.name} - {user.age}</p>;
+  const user = useSignal(userSignal);
+  return (
+    <p>
+      {user.name} - {user.age}
+    </p>
+  );
 }
 
 function AgeUpdater() {
-return (
-<button onClick={() =>
-userSignal.set(u => ({ ...u, age: u.age + 1 }))
-}>
-Increment Age
-</button>
-);
+  return (
+    <button onClick={() => userSignal.set((u) => ({ ...u, age: u.age + 1 }))}>
+      Increment Age
+    </button>
+  );
 }
 
 function NameUpdater() {
-return (
-<input
-onChange={(e) =>
-userSignal.set(u => ({ ...u, name: e.target.value }))
+  return (
+    <input
+      onChange={(e) => userSignal.set((u) => ({ ...u, name: e.target.value }))}
+      placeholder="Enter name"
+    />
+  );
 }
-placeholder="Enter name"
-/>
-);
-}
-\`\`\`
+```
 
 ### 📝 Todo List (Arrays)
 
-\`\`\`jsx
+```jsx
 const todosSignal = createSignal([
-{ id: 1, text: "Learn react-unprop", done: false }
+  { id: 1, text: "Learn react-unprop", done: false },
 ]);
 
 function TodoList() {
-const todos = useSignal(todosSignal);
+  const todos = useSignal(todosSignal);
 
-return (
-
-<ul>
-{todos.map(todo => (
-<li key={todo.id}>
-<input
-type="checkbox"
-checked={todo.done}
-onChange={() =>
-todosSignal.set(todos =>
-todos.map(t =>
-t.id === todo.id ? { ...t, done: !t.done } : t
-)
-)
-}
-/>
-{todo.text}
-</li>
-))}
-</ul>
-);
+  return (
+    <ul>
+      {todos.map((todo) => (
+        <li key={todo.id}>
+          <input
+            type="checkbox"
+            checked={todo.done}
+            onChange={() =>
+              todosSignal.set((todos) =>
+                todos.map((t) =>
+                  t.id === todo.id ? { ...t, done: !t.done } : t
+                )
+              )
+            }
+          />
+          {todo.text}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function AddTodo() {
-const addTodo = (text) => {
-todosSignal.set(todos => [
-...todos,
-{ id: Date.now(), text, done: false }
-]);
-};
+  const addTodo = (text) => {
+    todosSignal.set((todos) => [
+      ...todos,
+      { id: Date.now(), text, done: false },
+    ]);
+  };
 
-return (
-<button onClick={() => addTodo("New todo")}>
-Add Todo
-</button>
-);
+  return <button onClick={() => addTodo("New todo")}>Add Todo</button>;
 }
-\`\`\`
+```
 
 ### 🎨 Theme System
 
-\`\`\`jsx
+```jsx
 const themeSignal = createSignal("light");
 
 function ThemeProvider({ children }) {
-const theme = useSignal(themeSignal);
+  const theme = useSignal(themeSignal);
 
-return (
-
-<div className={`theme-${theme}`}>
-{children}
-</div>
-);
+  return <div className={`theme-${theme}`}>{children}</div>;
 }
 
 function ThemeToggle() {
-const theme = useSignal(themeSignal);
+  const theme = useSignal(themeSignal);
 
-return (
-<button onClick={() =>
-themeSignal.set(theme === "light" ? "dark" : "light")
-}>
-Switch to {theme === "light" ? "dark" : "light"} mode
-</button>
-);
+  return (
+    <button
+      onClick={() => themeSignal.set(theme === "light" ? "dark" : "light")}
+    >
+      {`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+    </button>
+  );
 }
-\`\`\`
+```
 
 ## 🧾 TypeScript Support
 
 Unprops are fully typed and provide excellent TypeScript support:
 
-\`\`\`ts
+```ts
 interface User {
-name: string;
-age: number;
-email?: string;
+  name: string;
+  age: number;
+  email?: string;
 }
 
 const userSignal = createSignal<User>({
-name: "Alice",
-age: 22,
+  name: "Alice",
+  age: 22,
 });
 
 // TypeScript will enforce the User interface
 userSignal.set(prev => ({
-...prev,
-age: prev.age + 1 // ✅ Valid
-// invalidProp: true // ❌ TypeScript error
+  ...prev,
+  age: prev.age + 1 // ✅ Valid
+  // invalidProp: true // ❌ TypeScript error
 }));
 
 function UserComponent() {
-const user = useSignal(userSignal); // user is typed as User
-return <div>{user.name}</div>; // ✅ TypeScript knows user.name exists
+  const user = useSignal(userSignal); // user is typed as User
+  return <div>{user.name}</div>; // ✅ TypeScript knows user.name exists
 }
-\`\`\`
+```
 
 ## ❓ Why react-unprop?
 
@@ -293,7 +282,7 @@ return <div>{user.name}</div>; // ✅ TypeScript knows user.name exists
 
 ### From useState
 
-\`\`\`jsx
+```jsx
 // Before
 const [count, setCount] = useState(0);
 
@@ -301,26 +290,26 @@ const [count, setCount] = useState(0);
 const countSignal = createSignal(0);
 const count = useSignal(countSignal);
 // Use countSignal.set() instead of setCount()
-\`\`\`
+```
 
 ### From Context
 
-\`\`\`jsx
+```jsx
 // Before
 const ThemeContext = createContext();
 const ThemeProvider = ({ children }) => {
-const [theme, setTheme] = useState("light");
-return (
-<ThemeContext.Provider value={{ theme, setTheme }}>
-{children}
-</ThemeContext.Provider>
-);
+  const [theme, setTheme] = useState("light");
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 };
 
 // After
 const themeSignal = createSignal("light");
 // No provider needed! Use useSignal(themeSignal) anywhere
-\`\`\`
+```
 
 ## 🤝 Contributing
 
@@ -344,23 +333,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ for the React community**
+**Made with ❤️ by Ayush Chauhan for the React community**
 
 [Report Bug](https://github.com/aayushchauhan10/react-unprop/issues) · [Request Feature](https://github.com/aayushchauhan10/react-unprop/issues) · [Documentation](https://github.com/aayushchauhan10/react-unprop#readme)
-\`\`\`
-
-This README.md file includes:
-
-- **Clear title and description** with badges
-- **Feature highlights** with emojis for visual appeal
-- **Installation instructions** for multiple package managers
-- **Quick start example** to get users going immediately
-- **Complete API reference** with parameters and return values
-- **Multiple practical examples** showing different use cases
-- **TypeScript support** with typed examples
-- **Comparison with traditional approaches** explaining the benefits
-- **Migration guide** for users coming from useState/Context
-- **Contributing guidelines** for open source collaboration
-- **License and acknowledgments**
-
-The README follows best practices for open source projects and provides comprehensive documentation that would help users understand and adopt the library quickly.

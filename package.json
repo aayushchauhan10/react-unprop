@@ -1,6 +1,6 @@
 {
   "name": "react-unprop",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "A lightweight React signal system for sharing reactive state across components — no prop drilling, no context, no global state libraries. Just pure reactivity.",
   "license": "MIT",
   "author": "Ayush Chauhan <ai.aayush10@gmail.com>",
@@ -10,7 +10,10 @@
     "hook",
     "unprop",
     "state",
-    "react-unprop"
+    "react-unprop",
+    "reactivity",
+    "react-unprop",
+    "reactjs"
   ],
   "repository": {
     "type": "git",
@@ -23,21 +26,29 @@
   "peerDependencies": {
     "react": ">=18.0.0"
   },
- "main": "dist/index.js",
- "module": "dist/index.mjs",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist",
     "prepare": "npm run build",
     "test": "vitest"
   },
   "devDependencies": {
+    "@types/node": "^22.15.27",
     "@types/react": "^19.1.5",
     "eslint": "^9.27.0",
     "prettier": "^3.5.3",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "vitest": "^3.1.4"
+  },
+  "dependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.5.0"
   }
 }

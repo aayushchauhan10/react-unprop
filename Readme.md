@@ -1,6 +1,6 @@
 # react-unprop
 
-A tiny React signal system for reactive state sharing — no props, no context.
+A tiny, open-source React signal system for reactive state sharing — no props, no context.
 
 Fast, flexible, and works across your entire React tree.
 
@@ -15,9 +15,13 @@ Fast, flexible, and works across your entire React tree.
 - 🎯 **Auto re-render** on signal update
 - 🔁 **Share state** between siblings, parents, or anywhere
 - ✅ **Works with primitives, arrays, and objects**
+- 🔐 **Optional encrypted persistence via localStorage**
+- 🧩 **Encryption built-in** — no config needed
+- 🧠 **Environment-agnostic** — works with CRA, Vite, Next.js, etc.
 - 💙 **Supports both JavaScript and TypeScript**
 - 📦 **Tiny bundle size** — less than 20KB gzipped
 - 🚀 **Zero dependencies**
+- 🌍 **Open Source** — built by the community, for the community
 
 ## 📦 Installation
 
@@ -60,36 +64,34 @@ function IncrementButton() {
 
 ✅ Both components update automatically when the signal changes.
 
+## 🔐 Persisting Encrypted State (Optional)
+
+`react-unprop` allows optional persistence to localStorage with built-in AES encryption.
+
+### Example
+
+```js
+const userSignal = createSignal({ name: "Alice" }, { persist: true });
+```
+
+The state will be securely stored in localStorage and automatically decrypted on load.
+
 ## 🧠 API Reference
 
-### `createSignal(initialValue)`
+### `createSignal(initialValue, options?)`
 
 Creates a reactive signal.
 
 **Parameters:**
 
 - `initialValue: T` — The initial value of the signal
+- `options.persist?: boolean` — Whether to persist the signal securely in localStorage
 
 **Returns an object with:**
 
 - `get(): T` — returns current value
 - `set(newValue | updaterFn): void` — sets value or updates with function
 - `subscribe(callback): () => void` — used internally by useSignal
-
-**Example:**
-
-```js
-const user = createSignal({ name: "Alice" });
-
-// Set with value
-user.set({ name: "Bob", age: 25 });
-
-// Set with updater function
-user.set((prev) => ({ ...prev, name: "Bob" }));
-
-// Get current value
-console.log(user.get()); // { name: "Bob", age: 25 }
-```
 
 ### `useSignal(signal)`
 
@@ -101,22 +103,11 @@ React hook that subscribes to a signal and auto-rerenders on update.
 
 **Returns:** The current value of the signal.
 
-**Example:**
-
-```jsx
-function Profile() {
-  const user = useSignal(userSignal);
-  return <div>Hello, {user.name}!</div>;
-}
-```
-
-## 🧪 Examples
+## 🧪 Code Examples
 
 ### 🔢 Counter
 
 ```jsx
-import { createSignal, useSignal } from "react-unprop";
-
 const counter = createSignal(0);
 
 function App() {
@@ -132,151 +123,92 @@ function App() {
 }
 ```
 
-### 👥 Shared Object State
+### 👥 Shared User State
 
 ```jsx
-const userSignal = createSignal({ name: "John", age: 25 });
+const userSignal = createSignal({ name: "John", age: 25 }, { persist: true });
 
-function UserProfile() {
+function Profile() {
   const user = useSignal(userSignal);
   return (
-    <p>
-      {user.name} - {user.age}
-    </p>
-  );
-}
-
-function AgeUpdater() {
-  return (
-    <button onClick={() => userSignal.set((u) => ({ ...u, age: u.age + 1 }))}>
-      Increment Age
-    </button>
-  );
-}
-
-function NameUpdater() {
-  return (
-    <input
-      onChange={(e) => userSignal.set((u) => ({ ...u, name: e.target.value }))}
-      placeholder="Enter name"
-    />
+    <div>
+      {user.name}, {user.age}
+    </div>
   );
 }
 ```
 
-### 📝 Todo List (Arrays)
+### 📋 Dynamic List (Array)
 
 ```jsx
-const todosSignal = createSignal([
-  { id: 1, text: "Learn react-unprop", done: false },
-]);
+const itemsSignal = createSignal([]);
 
-function TodoList() {
-  const todos = useSignal(todosSignal);
+function AddItem() {
+  return (
+    <button
+      onClick={() =>
+        itemsSignal.set((prev) => [...prev, `Item ${prev.length + 1}`])
+      }
+    >
+      Add Item
+    </button>
+  );
+}
 
+function ItemList() {
+  const items = useSignal(itemsSignal);
   return (
     <ul>
-      {todos.map((todo) => (
-        <li key={todo.id}>
-          <input
-            type="checkbox"
-            checked={todo.done}
-            onChange={() =>
-              todosSignal.set((todos) =>
-                todos.map((t) =>
-                  t.id === todo.id ? { ...t, done: !t.done } : t
-                )
-              )
-            }
-          />
-          {todo.text}
-        </li>
+      {items.map((item, idx) => (
+        <li key={idx}>{item}</li>
       ))}
     </ul>
   );
 }
-
-function AddTodo() {
-  const addTodo = (text) => {
-    todosSignal.set((todos) => [
-      ...todos,
-      { id: Date.now(), text, done: false },
-    ]);
-  };
-
-  return <button onClick={() => addTodo("New todo")}>Add Todo</button>;
-}
 ```
 
-### 🎨 Theme System
+### 🔄 Toggle State (Boolean)
 
 ```jsx
-const themeSignal = createSignal("light");
+const darkModeSignal = createSignal(false);
 
-function ThemeProvider({ children }) {
-  const theme = useSignal(themeSignal);
-
-  return <div className={`theme-${theme}`}>{children}</div>;
-}
-
-function ThemeToggle() {
-  const theme = useSignal(themeSignal);
-
+function ToggleDarkMode() {
+  const darkMode = useSignal(darkModeSignal);
   return (
-    <button
-      onClick={() => themeSignal.set(theme === "light" ? "dark" : "light")}
-    >
-      {`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+    <button onClick={() => darkModeSignal.set(!darkMode)}>
+      {darkMode ? "Disable" : "Enable"} Dark Mode
     </button>
   );
 }
 ```
 
-## 🧾 TypeScript Support
+### 📝 Form Input Binding
 
-Unprops are fully typed and provide excellent TypeScript support:
+```jsx
+const formSignal = createSignal({ name: "", email: "" });
 
-```ts
-interface User {
-  name: string;
-  age: number;
-  email?: string;
-}
-
-const userSignal = createSignal<User>({
-  name: "Alice",
-  age: 22,
-});
-
-// TypeScript will enforce the User interface
-userSignal.set(prev => ({
-  ...prev,
-  age: prev.age + 1 // ✅ Valid
-  // invalidProp: true // ❌ TypeScript error
-}));
-
-function UserComponent() {
-  const user = useSignal(userSignal); // user is typed as User
-  return <div>{user.name}</div>; // ✅ TypeScript knows user.name exists
+function Form() {
+  const form = useSignal(formSignal);
+  return (
+    <form>
+      <input
+        value={form.name}
+        onChange={(e) =>
+          formSignal.set((f) => ({ ...f, name: e.target.value }))
+        }
+        placeholder="Name"
+      />
+      <input
+        value={form.email}
+        onChange={(e) =>
+          formSignal.set((f) => ({ ...f, email: e.target.value }))
+        }
+        placeholder="Email"
+      />
+    </form>
+  );
 }
 ```
-
-## ❓ Why react-unprop?
-
-### 🛠 Traditional React state management often needs:
-
-- **Props drilling** — passing state through multiple component layers
-- **Context Providers** — wrapping components and managing context
-- **External state libraries** — Redux, Zustand, Jotai with their learning curves
-- **Boilerplate code** — actions, reducers, selectors
-
-### ✨ With react-unprop:
-
-- **Global reactive state** without boilerplate
-- **Minimal API surface** — just two functions
-- **Works across unrelated components** — no provider needed
-- **Automatic optimization** — components only re-render when their signals change
-- **TypeScript-first** — built with TypeScript from the ground up
 
 ## 🔄 Migration Guide
 
@@ -289,31 +221,29 @@ const [count, setCount] = useState(0);
 // After
 const countSignal = createSignal(0);
 const count = useSignal(countSignal);
-// Use countSignal.set() instead of setCount()
 ```
 
 ### From Context
 
 ```jsx
-// Before
+// Before: Context
 const ThemeContext = createContext();
-const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState("light");
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
 
-// After
+// After: Signal
 const themeSignal = createSignal("light");
-// No provider needed! Use useSignal(themeSignal) anywhere
 ```
+
+## 🌟 Why Open Source?
+
+- 👐 **Built with collaboration in mind**
+- 🛠️ **Customizable and extensible**
+- 🌱 **Actively maintained and open to PRs**
+- 📣 **Community-driven roadmap**
+- 🧩 **Transparent and secure codebase**
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome all contributions! Whether it's improving docs, fixing bugs, or adding features — you're welcome to join the journey.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -325,14 +255,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- Inspired by signals in [SolidJS](https://www.solidjs.com/)
-- Built for the React ecosystem
-- Thanks to all contributors and users
-
 ---
 
-**Made with ❤️ by Ayush Chauhan for the React community**
+**Made with ❤️ by Ayush Chauhan and the open-source community**
 
 [Report Bug](https://github.com/aayushchauhan10/react-unprop/issues) · [Request Feature](https://github.com/aayushchauhan10/react-unprop/issues) · [Documentation](https://github.com/aayushchauhan10/react-unprop#readme)

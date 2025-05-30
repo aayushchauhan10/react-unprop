@@ -1,6 +1,6 @@
 {
   "name": "react-unprop",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A lightweight React signal system for sharing reactive state across components — no prop drilling, no context, no global state libraries. Just pure reactivity.",
   "license": "MIT",
   "author": "Ayush Chauhan <ai.aayush10@gmail.com>",
@@ -48,7 +48,6 @@
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
-    "crypto-js": "^4.2.0",
-    "dotenv": "^16.5.0"
+    "crypto-js": "^4.2.0"
   }
 }

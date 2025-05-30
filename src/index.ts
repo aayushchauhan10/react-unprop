@@ -4,39 +4,43 @@ import CryptoJS from "crypto-js";
 type Callback = () => void;
 const subscribers = new Map<symbol, Set<Callback>>();
 
-
-const ENCRYPTION_SECRET = process.env.REACT_APP_ENCRYPTION_SECRET || "default_secret";
-
-function encrypt(data: any): string {
-  return CryptoJS.AES.encrypt(JSON.stringify(data), ENCRYPTION_SECRET).toString();
-}
-
-function decrypt(encrypted: string): any {
-  const bytes = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_SECRET);
-  const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-  return JSON.parse(decrypted);
-}
-
 interface SignalOptions<T> {
-  persistKey?: string; 
+  persistKey?: string;
+  encrypted?: boolean;
+  secret?: string;
+}
+
+// Default secret known only inside the package (for ease-of-use)
+const DEFAULT_SECRET = "__signal_package_secret__";
+
+// Encrypt using AES
+function encrypt<T>(data: T, secret: string): string {
+  const json = JSON.stringify(data);
+  return CryptoJS.AES.encrypt(json, secret).toString();
+}
+
+// Decrypt AES payload
+function decrypt<T>(cipher: string, secret: string): T {
+  const bytes = CryptoJS.AES.decrypt(cipher, secret);
+  const json = bytes.toString(CryptoJS.enc.Utf8);
+  return JSON.parse(json);
 }
 
 export function createSignal<T>(initialValue: T, options: SignalOptions<T> = {}) {
+  let value: T = initialValue;
   const key = Symbol("signal");
   subscribers.set(key, new Set());
 
-  const { persistKey } = options;
+  const { persistKey, encrypted = false, secret = DEFAULT_SECRET } = options;
 
-  let value: T = initialValue;
-
-
-  if (persistKey) {
-    const stored = localStorage.getItem(persistKey);
-    if (stored !== null) {
+  // Try loading from localStorage if persistence is enabled
+  if (persistKey && typeof localStorage !== "undefined") {
+    const raw = localStorage.getItem(persistKey);
+    if (raw) {
       try {
-        value = decrypt(stored);
-      } catch (e) {
-        console.warn(`Failed to decrypt localStorage signal for key "${persistKey}"`, e);
+        value = encrypted ? decrypt<T>(raw, secret) : JSON.parse(raw);
+      } catch (err) {
+        console.warn(`[createSignal] Failed to load persisted value:`, err);
       }
     }
   }
@@ -44,22 +48,27 @@ export function createSignal<T>(initialValue: T, options: SignalOptions<T> = {})
   const get = () => value;
 
   const set = (newValueOrUpdater: T | ((prev: T) => T)) => {
-    const newValue = typeof newValueOrUpdater === "function"
-      ? (newValueOrUpdater as (prev: T) => T)(value)
-      : newValueOrUpdater;
+    const newValue =
+      typeof newValueOrUpdater === "function"
+        ? (newValueOrUpdater as (prev: T) => T)(value)
+        : newValueOrUpdater;
 
     if (newValue !== value) {
       value = newValue;
 
-      if (persistKey) {
+      // Save to localStorage if enabled
+      if (persistKey && typeof localStorage !== "undefined") {
         try {
-          localStorage.setItem(persistKey, encrypt(value));
-        } catch (e) {
-          console.error(`Failed to persist encrypted signal`, e);
+          const toStore = encrypted
+            ? encrypt<T>(value, secret)
+            : JSON.stringify(value);
+          localStorage.setItem(persistKey, toStore);
+        } catch (err) {
+          console.warn(`[createSignal] Failed to persist value:`, err);
         }
       }
 
-      subscribers.get(key)?.forEach(cb => cb());
+      subscribers.get(key)?.forEach((cb) => cb());
     }
   };
 
